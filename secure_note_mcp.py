@@ -162,6 +162,7 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
             return "❌ Error: No secret ID returned from API."
 
         api_retrieval_url = f"{API_BASE_URL}/api/secrets/{secret_id}"
+        password_line = "🔐 **Password Protected**: Yes\n" if password else ""
 
         return f"""✅ Secret successfully encrypted and sent!
 
@@ -171,7 +172,7 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
 🔑 **Decryption Key** (base64-encoded, keep this safe!):
 {key}
 
-{'🔐 **Password Protected**: Yes\n' if password else ''}⏰ **Expires In**: {expires_in} hours
+{password_line}⏰ **Expires In**: {expires_in} hours
 
 ⚠️ **Security Note**:
 - The API URL above returns the encrypted data and IV in JSON format.
@@ -332,13 +333,14 @@ async def send_secure_note(message: str, password: Optional[str] = None, expires
         # URL-encode the decryption key for safe embedding in the URL fragment
         encoded_key = urllib.parse.quote(key, safe='')
         secret_url_with_key = f"{API_BASE_URL}?id={secret_id}#{key}"
+        password_line = "🔐 **Password Protected**: Yes\n" if password else ""
 
         return f"""✅ Secret successfully encrypted and sent!
 
 🔗 **One-Click Secret URL**:
 {secret_url_with_key}
 
-{'🔐 **Password Protected**: Yes\n' if password else ''}⏰ **Expires In**: {expires_in} hours
+{password_line}⏰ **Expires In**: {expires_in} hours
 
 ⚠️ **Security Warning**: 
 This URL contains the decryption key in the fragment (after #). While convenient, this is less secure than sharing the key separately.
