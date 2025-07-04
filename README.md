@@ -84,7 +84,7 @@ Share temporary access codes, meeting links, or event invitations that should on
 
 - Python 3.10 or higher
 - Your secure notes server running (Firebase, in-memory, or cloud)
-- OpenSSL (optional, will fallback to Python's secrets module)
+- The [cryptography](https://cryptography.io/en/latest/) Python library (installed automatically by setup)
 
 ---
 
@@ -322,8 +322,9 @@ def decrypt_message_gcm(encrypted_data: str, key: str, iv: str) -> str:
 - Use `check_api_health()` to verify connectivity.
 
 ### Encryption/Decryption Issues
-- Ensure OpenSSL is installed for best performance.
-- The server will fallback to Python's secrets module if OpenSSL is unavailable.
+- Ensure the Python `cryptography` library is installed (run `./setup_mcp.sh` or `pip install -r requirements.txt`).
+- The app uses AES-256-GCM for all encryption and decryption. No OpenSSL installation is required.
+- If you encounter decryption errors, double-check that you are using the correct base64-encoded key, IV, and encrypted data.
 
 ### Claude for Desktop Issues
 - Check the Claude logs: `tail -f ~/Library/Logs/Claude/mcp*.log`
