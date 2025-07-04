@@ -354,6 +354,77 @@ For maximum security, use `encrypt_and_send_secret()` instead and share the key 
     except Exception as e:
         return f"❌ Error sending secure note: {str(e)}"
 
+@mcp.tool()
+async def get_instructions() -> str:
+    """
+    Provides a comprehensive guide on how to use this secure note sharing service, intended for both humans and AI agents.
+
+    This guide explains the encryption process, the different methods for sharing secrets, and the tools available.
+
+    ---
+    ###  Encryption Details
+
+    - **Algorithm**: AES-256-GCM (Galois/Counter Mode)
+      - **Key Size**: 256 bits (32 bytes)
+      - **IV (Initialization Vector)**: 96 bits (12 bytes), randomly generated for each encryption.
+      - **Authentication Tag**: 128 bits (16 bytes), appended to the ciphertext to ensure integrity and authenticity.
+
+    - **Process**:
+      1. A unique 256-bit encryption key and a 96-bit IV are generated for each new secret.
+      2. The message is encrypted using AES-256-GCM.
+      3. The encrypted data, along with the IV, is stored on the server.
+      4. **Crucially, the encryption key is NEVER stored on the server.** It is the user's responsibility to manage the key.
+
+    ---
+    ### Available Tools & Sharing Workflows
+
+    There are two primary workflows for sharing a secret:
+
+    #### 1. Simple Sharing (One-Click URL)
+
+    - **Tool**: `send_secure_note(message, password=None, expires_in=24)`
+    - **How it works**:
+      - Encrypts your message.
+      - Stores the encrypted data on the server.
+      - Generates a single URL that includes both the secret's ID and the decryption key in the URL fragment (`#`).
+    - **Pros**:
+      - **Convenient**: The recipient only needs to click one link.
+    - **Cons**:
+      - **Less Secure**: The key is part of the URL. While the fragment is not typically sent to the server, it can be exposed in browser history, logs, or if the link is shared insecurely.
+    - **Use Case**: Best for low-sensitivity information where convenience is a priority.
+
+    ---
+    #### 2. Maximum Security Sharing (Two-Channel)
+
+    This workflow requires two separate steps and is the recommended method for sensitive information.
+
+    - **Step 1: Send the secret**
+      - **Tool**: `send_secure_note_return_api_url_and_key(message, password=None, expires_in=24)`
+      - **What it does**:
+        - Encrypts your message.
+        - Stores the encrypted data.
+        - Returns the **API URL** and the **decryption key** as two separate pieces of information.
+
+    - **Step 2: Retrieve the secret**
+      - **Tool**: `retrieve_and_decrypt_secret(secret_id, decryption_key, password=None)`
+      - **How it works**:
+        - You must provide the `secret_id` (from the API URL) and the `decryption_key`.
+        - The tool fetches the encrypted data from the server and decrypts it locally.
+    - **Pros**:
+      - **Most Secure**: The key is never transmitted with the URL. You should share the URL and the key through different channels (e.g., email the URL, text the key).
+    - **Cons**:
+      - Requires more steps for both the sender and the receiver.
+    - **Use Case**: Best for highly sensitive data like passwords, API keys, or private information.
+
+    ---
+    ### Other Tools
+
+    - **`check_api_health()`**:
+      - Use this to verify that the secure note server is online and operational.
+    """
+    return get_instructions.__doc__
+
+
 if __name__ == "__main__":
     # Initialize and run the server
     mcp.run(transport='stdio')
