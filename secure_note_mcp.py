@@ -10,7 +10,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 
 # Initialize FastMCP server
-mcp = FastMCP("secure-notes")
+mcp = FastMCP("securenote.link")
 
 # Constants
 # API_BASE_URL = "http://localhost:3000"  # Update this to your server URL

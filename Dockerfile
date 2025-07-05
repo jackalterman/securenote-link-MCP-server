@@ -10,20 +10,6 @@ ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
 # Set working directory
 WORKDIR /
 
-# Install system dependencies
-# RUN apt-get update && apt-get install -y --no-install-recommends \
-#     build-essential \
-#     curl \
-#     gcc \
-#     git \
-#     libffi-dev \
-#     libssl-dev \
-#     pkg-config \
-#     rustc \
-#     cargo \
-#     bash \
-#     && rm -rf /var/lib/apt/lists/*
-
 # Optional: upgrade pip, setuptools, wheel
 RUN pip install --upgrade pip setuptools wheel
 
