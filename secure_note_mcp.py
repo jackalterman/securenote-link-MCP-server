@@ -351,7 +351,7 @@ This URL contains the decryption key in the fragment (after #). While convenient
 - The secret will still be encrypted on the server
 
 🔒 **Recommendation**: 
-For maximum security, use `encrypt_and_send_secret()` instead and share the key through a separate channel.
+For maximum security, use a password and share it through a separate channel.
 """
     except Exception as e:
         return f"❌ Error sending secure note: {str(e)}"
