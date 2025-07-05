@@ -154,6 +154,8 @@ Encrypts a message, stores it via the API, and returns the retrieval URL and dec
 **Use Case:**
 - Maximum security workflows where you want to share the URL and key through different channels
 
+**Note:** The API retrieval URL now uses the versioned path `/api/v1/` (e.g., `/api/v1/secrets/{id}`) for all endpoints.
+
 ---
 
 ### 3. `retrieve_and_decrypt_secret`

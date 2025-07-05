@@ -154,14 +154,14 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
             api_data["password"] = password
 
         # Send to API
-        response = await make_api_request("POST", "/api/secrets", api_data)
+        response = await make_api_request("POST", "/api/v1/secrets", api_data)
         if not response:
             return "❌ Failed to send secret to API. Please check if the server is running."
         secret_id = response.get("id")
         if not secret_id:
             return "❌ Error: No secret ID returned from API."
 
-        api_retrieval_url = f"{API_BASE_URL}/api/secrets/{secret_id}"
+        api_retrieval_url = f"{API_BASE_URL}/api/v1/secrets/{secret_id}"
         password_line = "🔐 **Password Protected**: Yes\n" if password else ""
 
         return f"""✅ Secret successfully encrypted and sent!
@@ -214,7 +214,7 @@ async def retrieve_and_decrypt_secret(secret_id: str, decryption_key: str, passw
         decryption_key = decryption_key.strip()
         
         # First, retrieve the encrypted data from the API
-        response = await make_api_request("GET", f"/api/secrets/{secret_id}")
+        response = await make_api_request("GET", f"/api/v1/secrets/{secret_id}")
         
         if not response:
             return "❌ Failed to retrieve secret. It may have expired, been deleted, or never existed."
@@ -225,7 +225,7 @@ async def retrieve_and_decrypt_secret(secret_id: str, decryption_key: str, passw
         
         # If password is required, verify it
         if password:
-            verify_response = await make_api_request("POST", f"/api/secrets/{secret_id}/verify", {"password": password})
+            verify_response = await make_api_request("POST", f"/api/v1/secrets/{secret_id}/verify", {"password": password})
             if not verify_response:
                 return "❌ Incorrect password or verification failed."
             content = verify_response.get("content")
@@ -258,7 +258,7 @@ async def retrieve_and_decrypt_secret(secret_id: str, decryption_key: str, passw
 async def check_api_health() -> str:
     """Check if the secure notes API is running and healthy."""
     try:
-        response = await make_api_request("GET", "/api/health")
+        response = await make_api_request("GET", "/api/v1/health")
         
         if response and response.get("status") == "ok":
             server_info = response.get("server", {})
@@ -323,7 +323,7 @@ async def send_secure_note(message: str, password: Optional[str] = None, expires
             api_data["password"] = password
 
         # Send to API
-        response = await make_api_request("POST", "/api/secrets", api_data)
+        response = await make_api_request("POST", "/api/v1/secrets", api_data)
         if not response:
             return "❌ Failed to send secret to API. Please check if the server is running."
         secret_id = response.get("id")
