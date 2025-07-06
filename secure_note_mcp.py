@@ -363,7 +363,8 @@ async def get_instructions() -> str:
 
     This guide explains the encryption process, the different methods for sharing secrets, and the tools available.
 
-    ---
+    """
+    return """
     ###  Encryption Details
 
     - **Algorithm**: AES-256-GCM (Galois/Counter Mode)
@@ -423,8 +424,7 @@ async def get_instructions() -> str:
 
     - **`check_api_health()`**:
       - Use this to verify that the secure note server is online and operational.
-    """
-    return get_instructions.__doc__
+"""
 
 
 if __name__ == "__main__":
