@@ -1,10 +1,7 @@
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 import httpx
 import base64
-import os
-import subprocess
 import secrets
-import urllib.parse
 from fastmcp import FastMCP
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -13,9 +10,8 @@ from cryptography.hazmat.backends import default_backend
 mcp = FastMCP("securenote.link")
 
 # Constants
-# API_BASE_URL = "http://localhost:3000"  # Update this to your server URL
-# API_BASE_URL = "https://secure-note-app-455717.uc.r.appspot.com"  # Update this to your server URL
 API_BASE_URL = "https://securenote.link"  # Update this to your server URL
+VALID_EXPIRY_HOURS = [1, 24, 72, 168]
 
 # Helper functions
 async def make_api_request(method: str, endpoint: str, data: Optional[dict] = None) -> Optional[dict[str, Any]]:
@@ -44,7 +40,7 @@ async def make_api_request(method: str, endpoint: str, data: Optional[dict] = No
             print(f"API request failed: {e}")
             return None
 
-def generate_gcm_key_and_iv() -> tuple[str, str]:
+def generate_gcm_key_and_iv() -> Tuple[str, str]:
     """Generate a random 256-bit key and 96-bit IV for AES-GCM, both base64-encoded."""
     key = base64.b64encode(secrets.token_bytes(32)).decode('utf-8')  # 32 bytes = 256 bits
     iv = base64.b64encode(secrets.token_bytes(12)).decode('utf-8')   # 12 bytes = 96 bits
@@ -90,6 +86,56 @@ def decrypt_message_gcm(encrypted_data: str, key: str, iv: str) -> str:
     plaintext = decryptor.update(ciphertext) + decryptor.finalize()
     return plaintext.decode('utf-8')
 
+def validate_inputs(message: str, expires_in: int) -> Optional[str]:
+    """Validate common inputs for secret creation. Returns error message if invalid, None if valid."""
+    if not message or not message.strip():
+        return "❌ Error: Message cannot be empty."
+    if expires_in not in VALID_EXPIRY_HOURS:
+        return f"❌ Error: expires_in must be one of: {', '.join(map(str, VALID_EXPIRY_HOURS))} hours."
+    return None
+
+async def create_encrypted_secret(message: str, password: Optional[str], expires_in: int) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    """
+    Create an encrypted secret and store it via API.
+    
+    Returns:
+        Tuple of (secret_id, encryption_key, error_message)
+        If successful: (secret_id, key, None)
+        If failed: (None, None, error_message)
+    """
+    try:
+        # Generate key and IV, encrypt message
+        key, iv = generate_gcm_key_and_iv()
+        encrypted_data = encrypt_message_gcm(message.strip(), key, iv)
+
+        # Prepare API request data
+        api_data = {
+            "encryptedData": encrypted_data,
+            "iv": iv,
+            "expiresIn": expires_in
+        }
+        if password:
+            api_data["password"] = password
+
+        # Send to API
+        response = await make_api_request("POST", "/api/v1/secrets", api_data)
+        if not response:
+            return None, None, "❌ Failed to send secret to API. Please check if the server is running."
+        
+        secret_id = response.get("id")
+        if not secret_id:
+            return None, None, "❌ Error: No secret ID returned from API."
+
+        return secret_id, key, None
+        
+    except Exception as e:
+        return None, None, f"❌ Error creating encrypted secret: {str(e)}"
+
+def format_security_info(password: Optional[str], expires_in: int) -> str:
+    """Format common security information for responses."""
+    password_line = "🔐 **Password Protected**: Yes\n" if password else ""
+    return f"{password_line}⏰ **Expires In**: {expires_in} hours"
+
 # MCP Tools
 @mcp.tool()
 async def send_secure_note_return_api_url_and_key(message: str, password: Optional[str] = None, expires_in: int = 24) -> str:
@@ -133,38 +179,20 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
     - Base64-decode the key, iv, and encryptedData.
     - Use AES-256-GCM to decrypt, using the key and iv.
     """
-    try:
-        # Validate inputs
-        if not message or not message.strip():
-            return "❌ Error: Message cannot be empty."
-        if expires_in not in [1, 24, 72, 168]:
-            return "❌ Error: expires_in must be one of: 1, 24, 72, or 168 hours."
+    # Validate inputs
+    error = validate_inputs(message, expires_in)
+    if error:
+        return error
 
-        # Generate key and IV, encrypt message
-        key, iv = generate_gcm_key_and_iv()
-        encrypted_data = encrypt_message_gcm(message.strip(), key, iv)
+    # Create encrypted secret
+    secret_id, key, error = await create_encrypted_secret(message, password, expires_in)
+    if error:
+        return error
 
-        # Prepare API request data
-        api_data = {
-            "encryptedData": encrypted_data,
-            "iv": iv,
-            "expiresIn": expires_in
-        }
-        if password:
-            api_data["password"] = password
+    api_retrieval_url = f"{API_BASE_URL}/api/v1/secrets/{secret_id}"
+    security_info = format_security_info(password, expires_in)
 
-        # Send to API
-        response = await make_api_request("POST", "/api/v1/secrets", api_data)
-        if not response:
-            return "❌ Failed to send secret to API. Please check if the server is running."
-        secret_id = response.get("id")
-        if not secret_id:
-            return "❌ Error: No secret ID returned from API."
-
-        api_retrieval_url = f"{API_BASE_URL}/api/v1/secrets/{secret_id}"
-        password_line = "🔐 **Password Protected**: Yes\n" if password else ""
-
-        return f"""✅ Secret successfully encrypted and sent!
+    return f"""✅ Secret successfully encrypted and sent!
 
 🔗 **API Retrieval URL** (returns JSON, not a user-facing page):
 {api_retrieval_url}
@@ -172,7 +200,7 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
 🔑 **Decryption Key** (base64-encoded, keep this safe!):
 {key}
 
-{password_line}⏰ **Expires In**: {expires_in} hours
+{security_info}
 
 ⚠️ **Security Note**:
 - The API URL above returns the encrypted data and IV in JSON format.
@@ -190,8 +218,6 @@ async def send_secure_note_return_api_url_and_key(message: str, password: Option
 🔒 **Recommendation**:
 If you want a single, user-friendly link, use 'send_secure_note' instead (less secure).
 """
-    except Exception as e:
-        return f"❌ Error sending secure note: {str(e)}"
 
 @mcp.tool()
 async def retrieve_and_decrypt_secret(secret_id: str, decryption_key: str, password: Optional[str] = None) -> str:
@@ -302,45 +328,26 @@ async def send_secure_note(message: str, password: Optional[str] = None, expires
         but may be visible in browser history or if the link is shared insecurely.
         For maximum security, consider sharing the key separately.
     """
-    try:
-        # Validate inputs
-        if not message or not message.strip():
-            return "❌ Error: Message cannot be empty."
-        if expires_in not in [1, 24, 72, 168]:
-            return "❌ Error: expires_in must be one of: 1, 24, 72, or 168 hours."
+    # Validate inputs
+    error = validate_inputs(message, expires_in)
+    if error:
+        return error
 
-        # Generate key and IV, encrypt message
-        key, iv = generate_gcm_key_and_iv()
-        encrypted_data = encrypt_message_gcm(message.strip(), key, iv)
+    # Create encrypted secret
+    secret_id, key, error = await create_encrypted_secret(message, password, expires_in)
+    if error:
+        return error
 
-        # Prepare API request data
-        api_data = {
-            "encryptedData": encrypted_data,
-            "iv": iv,
-            "expiresIn": expires_in
-        }
-        if password:
-            api_data["password"] = password
+    # Create the one-click URL with embedded key
+    secret_url_with_key = f"{API_BASE_URL}?id={secret_id}#{key}"
+    security_info = format_security_info(password, expires_in)
 
-        # Send to API
-        response = await make_api_request("POST", "/api/v1/secrets", api_data)
-        if not response:
-            return "❌ Failed to send secret to API. Please check if the server is running."
-        secret_id = response.get("id")
-        if not secret_id:
-            return "❌ Error: No secret ID returned from API."
-
-        # URL-encode the decryption key for safe embedding in the URL fragment
-        encoded_key = urllib.parse.quote(key, safe='')
-        secret_url_with_key = f"{API_BASE_URL}?id={secret_id}#{key}"
-        password_line = "🔐 **Password Protected**: Yes\n" if password else ""
-
-        return f"""✅ Secret successfully encrypted and sent!
+    return f"""✅ Secret successfully encrypted and sent!
 
 🔗 **One-Click Secret URL**:
 {secret_url_with_key}
 
-{password_line}⏰ **Expires In**: {expires_in} hours
+{security_info}
 
 ⚠️ **Security Warning**: 
 This URL contains the decryption key in the fragment (after #). While convenient, this is less secure than sharing the key separately.
@@ -353,8 +360,6 @@ This URL contains the decryption key in the fragment (after #). While convenient
 🔒 **Recommendation**: 
 For maximum security, use a password and share it through a separate channel.
 """
-    except Exception as e:
-        return f"❌ Error sending secure note: {str(e)}"
 
 @mcp.tool()
 async def get_instructions() -> str:
