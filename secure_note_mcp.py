@@ -29,7 +29,7 @@ async def make_api_request(method: str, endpoint: str, data: Optional[dict] = No
                 raise ValueError(f"Unsupported HTTP method: {method}")
                 
             response.raise_for_status()
-            return response.json()
+            return await response.json()
         except httpx.TimeoutException:
             print(f"API request timed out for {url}")
             return None

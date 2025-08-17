@@ -1,25 +1,31 @@
-# Use a glibc-based Python 3.14 image (beta)
-FROM python:3.11-slim
+# Use a glibc-based Python Image
+FROM python:3.13.7-slim
 
-
-# Set environment variables
+# Set environment variables for Python behavior
 ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PATH="/home/appuser/.local/bin:$PATH"
 
-# Set working directory
-WORKDIR /
+# Create and switch to a non-root user
+RUN useradd --create-home --shell /bin/bash appuser
+USER appuser
+WORKDIR /home/appuser
 
-# Optional: upgrade pip, setuptools, wheel
-RUN pip install --upgrade pip setuptools wheel
+# Copy dependency file first (for better build caching)
+COPY --chown=appuser:appuser requirements.txt ./ 
 
-# Copy code into container
-COPY . .
+# Install only required Python dependencies
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Make setup script executable and run it
+# Copy application code into container
+COPY --chown=appuser:appuser . .
+
+# Ensure setup script is executable and run it
 RUN chmod +x setup_mcp.sh && ./setup_mcp.sh
 
-# (Optional) Expose ports if needed
+# Expose ports if your app needs it (optional)
 # EXPOSE 8000
 
 # Run the MCP server
