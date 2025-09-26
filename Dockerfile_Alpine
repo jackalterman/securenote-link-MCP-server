@@ -66,10 +66,14 @@ COPY --from=builder --chown=appuser:appuser /home/builduser/.local /home/appuser
 # Copy application code
 COPY --chown=appuser:appuser . .
 
+# Setup MCP (assuming this doesn't need build tools)
+RUN chmod +x setup_mcp.sh && \
+    ./setup_mcp.sh && \
+    rm -f setup_mcp.sh
+
 # Health check
 # HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 #     CMD python3 -c "import sys; sys.exit(0)"
-
 HEALTHCHECK --interval=60m --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f https://securenote.link/api/v1/health || exit 1
 

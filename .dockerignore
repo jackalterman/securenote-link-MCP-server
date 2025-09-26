@@ -1,0 +1,10 @@
+.git
+.gitignore
+README.md
+Dockerfile
+Dockerfile_Slim
+Dockerfile_Alpine
+.dockerignore
+building_docker_image.txt
+setup_mcp.sh
+__pycache__
