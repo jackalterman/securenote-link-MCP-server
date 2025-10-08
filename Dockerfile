@@ -1,5 +1,5 @@
 # Multi-stage build to minimize final image size
-FROM python:3.13-alpine AS builder
+FROM python:3.13.8-alpine AS builder
 
 # Set build environment variables
 ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
@@ -16,6 +16,7 @@ RUN apk update && apk add --no-cache \
         openssl-dev \
         cargo \
         rust \
+        openssl \
     && rm -rf /var/cache/apk/*
 
 # Create build user
@@ -33,7 +34,7 @@ RUN pip install --no-cache-dir --user --upgrade pip setuptools wheel && \
     pip cache purge
 
 # Final stage - minimal runtime image
-FROM python:3.13-alpine AS runtime
+FROM python:3.13.8-alpine AS runtime
 
 # Set runtime environment variables
 ENV PYO3_USE_ABI3_FORWARD_COMPATIBILITY=1 \
