@@ -31,6 +31,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir --user --upgrade pip setuptools wheel && \
     pip install --no-cache-dir --user "authlib>=1.6.4" && \
     pip install --no-cache-dir --user -r requirements.txt && \
+    pip install --no-cache-dir --upgrade fastmcp && \
     pip cache purge
 
 # Final stage - minimal runtime image
