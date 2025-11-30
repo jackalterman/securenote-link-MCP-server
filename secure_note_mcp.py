@@ -17,7 +17,7 @@ VALID_EXPIRY_HOURS = [1, 24, 72, 168]
 async def make_api_request(method: str, endpoint: str, data: Optional[dict] = None) -> Optional[dict[str, Any]]:
     """Make a request to the secure notes API with proper error handling."""
     url = f"{API_BASE_URL}{endpoint}"
-    headers = {"Content-Type": "application/json"}
+    headers = {"Content-Type": "application/json", "x-source": "mcp"}
     
     async with httpx.AsyncClient() as client:
         try:
