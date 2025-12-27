@@ -1,64 +1,116 @@
-# SecureNote.link MCP Server
+# 🔐 SecureNote.link MCP Server
 
 <div align="center">
 
-🔐 **Secure, End-to-End Encrypted Note Sharing for AI Agents**
+### **End-to-End Encrypted Note Sharing for AI Agents**
 
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+*Because your secrets deserve better than plain text*
+
+[![MCP Hub](https://img.shields.io/badge/MCP%20Hub-Available-brightgreen?logo=docker&logoColor=white)](https://hub.docker.com/mcp/server/securenote-link-mcp-server/overview)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-green.svg)](https://modelcontextprotocol.io/)
+[![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-5C5CFF)](https://modelcontextprotocol.io/)
 
-🌐 **[Try SecureNote.link in your browser](https://securenote.link)**
+[Try the Web App](https://securenote.link) • [MCP Hub](https://hub.docker.com/mcp/server/securenote-link-mcp-server/overview) • [Report Issue](https://github.com/your-repo/issues)
 
 </div>
 
-## Overview
+---
 
-A Model Context Protocol (MCP) server that enables AI agents to securely share sensitive information through end-to-end encrypted notes. Perfect for Claude Desktop, Cursor, and other MCP-compatible applications where AI agents need to handle confidential data safely.
+## 🎯 What is This?
 
-### Key Features
+Ever needed your AI assistant to share sensitive information with you securely? API keys, passwords, database credentials, or any secret data? **SecureNote.link MCP Server** lets Claude, Cursor, and other AI agents create encrypted notes that **you can safely open in your browser**.
 
-- 🔐 **Military-Grade Encryption**: AES-256-GCM with client-side encryption
-- 📤 **Flexible Sharing**: Choose between convenience (one-click URLs) or maximum security (separate URL + key)
-- 🔥 **Burn-After-Reading**: Automatic deletion after viewing
-- ⏰ **Customizable Expiration**: 1, 24, 72, or 168 hours
-- 🛡️ **Password Protection**: Optional additional security layer
-- 🤖 **AI Agent Ready**: Seamless integration with Claude Desktop, Cursor, and more
-- 🔍 **Health Monitoring**: Built-in API status checking
-- 🧰 **Developer Friendly**: Comprehensive documentation and manual decryption functions
+Your AI creates the note, gives you a link, and you open it at **[securenote.link](https://securenote.link)**—where the note decrypts in your browser and then self-destructs. Think of it as a **secure handoff** from AI to human, with military-grade encryption and zero-knowledge architecture that ensures even the server never sees your data.
 
-## Quick Start
+> ### 🌐 For Recipients: Reading Secure Notes
+> 
+> **Someone sent you a secure note link?** Visit **[securenote.link](https://securenote.link)** in any browser!
+> 
+> - **One-click links** → Just click and read (note auto-decrypts)
+> - **Two-part security** → Paste the URL and key into a browser (separated by #)
+> - **Works everywhere** → Desktop, mobile, any browser
+> - **No sign-up needed** → Completely anonymous
 
-### Prerequisites
+---
 
-- Python 3.11 or higher
-- An MCP-compatible client (Claude Desktop, Cursor, etc.)
+## ✨ Why You'll Love It
+
+<table>
+<tr>
+<td width="50%">
+
+### 🛡️ **Fort Knox Security**
+- **AES-256-GCM encryption** (the same used by governments)
+- **Zero-knowledge architecture** (server never sees your data)
+- **Client-side encryption** (your data is encrypted before leaving your device)
+- Optional **password protection** for extra peace of mind
+
+</td>
+<td width="50%">
+
+### ⚡ **Ridiculously Easy**
+- **One-click sharing** for recipients (just click the link!)
+- **Works in any browser** via [securenote.link](https://securenote.link)
+- **No account needed** for you or recipients
+- Works with **Claude Desktop, Cursor**, and any MCP client
+
+</td>
+</tr>
+<tr>
+<td width="50%">
+
+### ⏱️ **Flexible & Smart**
+- Set expiration: **1, 24, 72, or 168 hours**
+- **Self-destructing notes** that vanish after first view
+- **Health monitoring** to verify everything's working
+- **Manual decryption** functions for advanced users
+
+</td>
+<td width="50%">
+
+### 🧑‍💻 **Developer Friendly**
+- Clean, documented API
+- Comprehensive error handling
+- Built-in usage instructions
+- Active maintenance and support
+
+</td>
+</tr>
+</table>
+
+---
+
+## 🚀 Quick Start
 
 ### Installation
 
-1. **Download the MCP server file** (save as `secure_note_mcp.py`)
+**Option 1: MCP Hub (Recommended)** 🐳
 
-2. **Install dependencies**:
-   ```bash
-   pip install fastmcp httpx cryptography
-   ```
+Available as a pre-built Docker image on MCP Hub:
 
-3. **Configure your MCP client** (see detailed instructions below)
+👉 **[Get it on MCP Hub](https://hub.docker.com/mcp/server/securenote-link-mcp-server/overview)**
 
-4. **Start using secure notes** with your AI agent!
+Follow the simple setup instructions on MCP Hub to add it to your Claude Desktop or other MCP client.
 
-## Setup Instructions
+---
 
-### Claude Desktop
+**Option 2: Direct Python Installation** 🐍
 
-1. **Locate your config file**:
-   
-   | Platform | Path |
-   |----------|------|
-   | macOS/Linux | `~/Library/Application Support/Claude/claude_desktop_config.json` |
-   | Windows | `%AppData%\Claude\claude_desktop_config.json` |
+```bash
+# Install dependencies
+pip install -r requirements.txt
 
-2. **Add the MCP server configuration**:
+```
+
+<details>
+<summary><b>📋 Claude Desktop Configuration</b></summary>
+
+1. **Find your config file:**
+   - **macOS/Linux:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows:** `%AppData%\Claude\claude_desktop_config.json`
+
+2. **Add this configuration:**
    ```json
    {
      "mcpServers": {
@@ -69,264 +121,320 @@ A Model Context Protocol (MCP) server that enables AI agents to securely share s
      }
    }
    ```
-   > ⚠️ **Important**: Replace `/ABSOLUTE/PATH/TO/secure_note_mcp.py` with the full path to your script
 
-3. **Restart Claude Desktop**
+3. **Restart Claude Desktop** and you're ready!
 
-### Cursor
+</details>
 
-Add the MCP server in your client settings:
-```bash
-python3 /ABSOLUTE/PATH/TO/secure_note_mcp.py
+---
+
+## 🎨 How It Works
+
+Your AI agent creates an encrypted note, and **you share the link with anyone who needs the information**. They simply open it in their browser at **[securenote.link](https://securenote.link)** to read it.
+
+### Two Security Modes for Different Needs
+
+#### 🟢 **Convenience Mode** (One-Click URLs)
+Perfect for quick, trusted sharing. Recipients just click and read—no copy-pasting required!
+
+```
+https://securenote.link?id=abc123#dGVzdGtleQ==
+                                 ↑
+                    Decryption key in URL fragment
+                    (never sent to server!)
 ```
 
-### Docker Deployment
+**How it works:**
+1. AI creates the encrypted note
+2. You get a single link
+3. Share via email, Slack, chat, etc.
+4. Recipient clicks → note decrypts in their browser → self-destructs
 
-For containerized deployment or better isolation:
+**Best for:** Team members, trusted colleagues, or when convenience matters
 
-1. **Build the image**:
-   ```bash
-   docker build -t securenote-link-mcp .
-   ```
+---
 
-2. **Run the container**:
-   ```bash
-   docker run --rm -it \
-     --name securenote-link-mcp \
-     securenote-link-mcp
-   ```
+#### 🔴 **Maximum Security Mode** (Two-Channel)
+For when security is paramount. Get separate URL and decryption key to share through different channels.
 
-3. **Update MCP client config**:
-   ```json
-   {
-     "mcpServers": {
-       "securenote.link": {
-         "command": "docker",
-         "args": ["run", "--rm", "-i", "securenote-link-mcp"]
-       }
-     }
-   }
-   ```
-
-## Usage Guide
-
-### Security Models
-
-#### 🟢 Convenient Sharing (One-Click URLs)
-- **Best for**: Quick sharing with trusted recipients
-- **How it works**: Single URL contains both secret ID and decryption key
-- **Security**: Good for most use cases, relies on URL security
-
-#### 🔴 Maximum Security (Two-Channel)
-- **Best for**: Highly sensitive information
-- **How it works**: Separate URL and decryption key for different communication channels
-- **Security**: Highest level - even if one channel is compromised, data remains secure
-
-### Common Workflows
-
-#### Share a Secret with AI Agent
 ```
-You: "Please create a secure note with my API key: sk-1234567890"
-Claude: *Uses send_secure_note tool*
-Claude: "I've created a secure note that expires in 24 hours: 
-https://securenote.link?id=abc123#dGVzdGtleQ=="
+URL:  https://securenote.link/api/v1/secrets/xyz789
+Key:  dGVzdGtleQ==
+      ↑
+  Share these via different channels!
 ```
 
-#### Maximum Security Transfer
+**How it works:**
+1. AI creates the encrypted note  
+2. You get URL + separate decryption key
+3. Share URL via one channel (email)
+4. Share key via another channel (text/Slack)
+5. Recipient pastes both into securenote.link → decrypts
+
+**Best for:** Highly sensitive data, compliance requirements, paranoid security posture
+
+---
+
+### 🤖 Can AI Agents Share with Other AI Agents?
+
+Yes! The `retrieve_and_decrypt_secret` tool allows one AI agent to retrieve notes created by another. However, this is less common since AI agents typically don't have persistent memory across conversations. The primary use case is **AI-to-human** sharing.
+
+---
+
+## 💡 Real-World Examples
+
+### 📧 Email Credentials Securely
+
 ```
-You: "Create a secure note for my database password, but give me the URL and key separately"
-Claude: *Uses send_secure_note_return_api_url_and_key tool*
-Claude: "Here's your retrieval URL: https://securenote.link/api/v1/secrets/xyz789
-And your decryption key: dGVzdGtleQ=="
+You: "Generate our new email server password and create a secure note 
+      I can send to the IT team."
+
+Claude: "I've generated a strong password and created a secure note:
+         
+         🔗 https://securenote.link?id=x7k2p#dGVzdGtleQ==
+         
+         Share this link via email or Slack. It expires in 24 hours
+         and self-destructs after the first person views it.
+         
+         They just click the link and the password will appear in their browser!"
 ```
 
-#### Retrieve and Decrypt a Secret
+---
+
+### 🔐 Share API Keys with Team Members
+
 ```
-You: "Can you retrieve the secret with ID 'xyz789' using key 'dGVzdGtleQ=='?"
-Claude: *Uses retrieve_and_decrypt_secret tool*
-Claude: "Successfully decrypted! The message is: 'Your database password here'"
+You: "Create a secure note with our production API key 
+      that I can share with the new developer."
+
+Claude: "Created a secure note with your API key:
+         
+         🔗 https://securenote.link?id=k9m3x#c2VjcmV0a2V5
+         
+         Send this link to your developer. When they click it:
+         • The note will decrypt in their browser
+         • They can copy the API key
+         • The note will immediately delete itself
+         
+         No chat logs, no email archives—completely secure!"
 ```
 
-## API Reference
+---
+
+### 🛡️ Maximum Security for Sensitive Data
+
+```
+You: "I need to share database credentials with our contractor,
+      but I want maximum security."
+
+Claude: "Created a secure note with two-channel security:
+         
+         📎 Send via email: 
+         https://securenote.link/api/v1/secrets/9m4x2
+         
+         🔑 Send via Slack/text: 
+         dGVzdGtleXZhbHVl
+         
+         They'll need BOTH to decrypt. Share them through different
+         channels—even if one is compromised, the data stays secure.
+         
+         They can paste both into securenote.link to retrieve the credentials!"
+```
+
+---
+
+### 🔍 Retrieve and Read a Note (as a Human)
+
+When someone sends you a secure note link:
+
+1. **Click the link** → Opens securenote.link in your browser
+2. **Note decrypts automatically** → See the secret message
+3. **Copy what you need** → Message deletes immediately after viewing
+4. **Done!** → No trace left behind
+
+Or if you have a separate URL and key:
+1. **Construct the full URL** by combining them:
+   - Format: `https://securenote.link?id={secret_id}#{decryption_key}`
+   - Example: `https://securenote.link?id=xyz789#dGVzdGtleQ==`
+2. **Open the assembled URL** in your browser
+3. Secret decrypts automatically and is then deleted
+
+---
+
+## 🔧 Available Tools
+
+The MCP server provides these tools to your AI agent:
+
+| Tool | What It Does |
+|------|--------------|
+| `send_secure_note` | Create a convenient one-click shareable URL |
+| `send_secure_note_return_api_url_and_key` | Create separate URL + key for maximum security |
+| `retrieve_and_decrypt_secret` | Retrieve and decrypt a secret using ID and key |
+| `check_api_health` | Verify API server status and connectivity |
+| `get_instructions` | Get comprehensive usage documentation |
+
+<details>
+<summary><b>📖 Full API Reference</b></summary>
 
 ### `send_secure_note`
-Creates a convenient one-click shareable URL (recommended for most use cases).
+Creates a convenient one-click URL (recommended for most use cases).
 
 **Parameters:**
 - `message` (string, required): The secret message to encrypt
 - `password` (string, optional): Additional password protection
-- `expires_in` (integer, optional): Expiration time in hours (1, 24, 72, or 168) - defaults to 24
+- `expires_in` (integer, optional): Hours until expiration (1, 24, 72, or 168)
 
-**Returns:** 
-- Single shareable URL with embedded decryption key in URL fragment
-- Format: `https://securenote.link?id={secret_id}#{decryption_key}`
+**Returns:** Single shareable URL with embedded decryption key
 
-**Security Note:** Key is in URL fragment (after `#`) - not sent to server but may appear in browser history.
+---
 
 ### `send_secure_note_return_api_url_and_key`
-Creates separate URL and decryption key for maximum security.
+Creates separate URL and key for maximum security.
 
 **Parameters:**
 - `message` (string, required): The secret message to encrypt
-- `password` (string, optional): Additional password protection  
-- `expires_in` (integer, optional): Expiration time in hours (1, 24, 72, or 168) - defaults to 24
+- `password` (string, optional): Additional password protection
+- `expires_in` (integer, optional): Hours until expiration (1, 24, 72, or 168)
 
-**Returns:** 
-- API retrieval URL: `https://securenote.link/api/v1/secrets/{secret_id}`
-- Base64-encoded decryption key (separate from URL)
+**Returns:** API URL and Base64-encoded decryption key (separately)
 
-**Security Note:** Share URL and key through different channels for maximum security.
+---
 
 ### `retrieve_and_decrypt_secret`
-Retrieves and decrypts a secret using ID and key.
+Retrieves and decrypts a secret.
 
 **Parameters:**
-- `secret_id` (string, required): The secret identifier from the API URL
-- `decryption_key` (string, required): Base64-encoded decryption key
-- `password` (string, optional): Password if secret is password-protected
+- `secret_id` (string, required): Secret identifier
+- `decryption_key` (string, required): Base64-encoded key
+- `password` (string, optional): If the secret is password-protected
 
-**Returns:** 
-- Decrypted message content
-- Confirmation of secret ID
+**Returns:** Decrypted message content
 
-**Note:** This tool handles password-protected secrets automatically by prompting for verification.
+</details>
 
-### `check_api_health`
-Checks API server status and connectivity.
+---
 
-**Returns:** 
-- Health status (OK/Error)
-- Server uptime and version information
-- API base URL confirmation
+## 🔬 Security Deep-Dive
 
-**Use Case:** Troubleshooting connection issues or verifying service availability.
+### The Encryption
 
-### `get_instructions`
-Provides comprehensive usage documentation and technical details.
+- **Algorithm:** AES-256-GCM (Galois/Counter Mode)
+  - 256-bit keys (impossible to brute force with current technology)
+  - Authenticated encryption (integrity + confidentiality)
+  - Unique IV for each message (prevents pattern analysis)
 
-**Returns:** 
-- Detailed encryption specifications (AES-256-GCM)
-- Workflow explanations and security considerations
-- Complete tool documentation
+### The Architecture
 
-**Use Case:** Getting help or understanding the service's technical implementation.
+```
+┌─────────────┐                    ┌─────────────┐
+│   Client    │                    │   Server    │
+│  (Your AI)  │                    │             │
+└──────┬──────┘                    └──────┬──────┘
+       │                                  │
+       │ 1. Generate random key           │
+       │    (never sent!)                 │
+       │                                  │
+       │ 2. Encrypt message locally       │
+       │────────────────────────────────> │
+       │    (only encrypted data sent)    │
+       │                                  │
+       │ 3. Server stores encrypted blob  │
+       │    (can't decrypt without key!)  │
+       │                                  │
+       │ 4. Returns secret ID             │
+       │ <──────────────────────────────  │
+       │                                  │
+       
+Key stays with client → Zero-knowledge achieved ✅
+```
 
-## Security Details
+### Why This Matters
 
-### Encryption
-- **Algorithm**: AES-256-GCM (Galois/Counter Mode)
-- **Key Size**: 256 bits (32 bytes) - cryptographically secure random generation
-- **IV (Initialization Vector)**: 96 bits (12 bytes) - unique for each encryption
-- **Authentication Tag**: 128 bits (16 bytes) - ensures data integrity and authenticity
-- **Implementation**: Uses Python's `cryptography` library with `secrets` module for secure randomness
+1. **Zero-Knowledge:** The server literally cannot decrypt your data (it doesn't have the key)
+2. **No Trust Required:** You don't need to trust the server operator
+3. **Self-Destructing:** Even if someone gets the URL, the note deletes after viewing
+4. **Time-Limited:** Secrets automatically expire, reducing exposure window
 
-### Data Handling
-- **Zero-Knowledge Architecture**: Server never sees unencrypted data or decryption keys
-- **Client-Side Encryption**: All encryption/decryption happens on the client
-- **Automatic Deletion**: Secrets are deleted after viewing or expiration (burn-after-reading)
-- **No Key Storage**: Decryption keys are never stored server-side
-- **Secure Transport**: All API communications use HTTPS
+---
 
-### Key Management
-- **Key Generation**: Uses `secrets.token_bytes(32)` for cryptographically secure 256-bit keys
-- **Key Format**: Base64-encoded for safe transmission and storage
-- **Key Separation**: In maximum security mode, keys are completely separate from URLs
+## 🆘 Troubleshooting
 
-### Best Practices
-- Use maximum security mode for highly sensitive data
-- Set appropriate expiration times
-- Consider password protection for additional security
-- Share URLs and keys through different channels when possible
+<details>
+<summary><b>❌ Module not found errors</b></summary>
 
-## Troubleshooting
-
-### Common Issues
-
-**"ModuleNotFoundError: No module named 'fastmcp'" or similar**
 ```bash
 pip install fastmcp httpx cryptography
 ```
 
-**"Command not found" errors**
-- Ensure Python 3.11+ is installed: `python3 --version`
-- Use the full path to your Python executable if needed: `which python3`
-- Check that the MCP server script path is absolute and correct
+Make sure you're using Python 3.11+:
+```bash
+python3 --version
+```
 
-**Connection or API issues**
-- Use the `check_api_health` tool to verify server connectivity
-- Check your internet connection and firewall settings
-- Ensure https://securenote.link is accessible from your network
-- Verify the API_BASE_URL in the script matches the service endpoint
+</details>
 
-**Encryption/Decryption errors**
-- Ensure secret hasn't expired (check expiration time)
-- Verify decryption key is complete and hasn't been truncated
-- Check that password (if used) is correct
-- Secret may have been already viewed (burn-after-reading)
+<details>
+<summary><b>🔌 Connection issues</b></summary>
 
-**MCP Configuration issues**
-- Restart your MCP client after configuration changes
-- Check JSON syntax in configuration files
-- Ensure file paths use forward slashes or proper escaping
-- Verify script has execute permissions: `chmod +x secure_note_mcp.py`
+Use the built-in health check:
+```
+Ask your AI: "Check the SecureNote.link API health"
+```
 
-### Getting Help
+Verify:
+- Internet connection is working
+- https://securenote.link is accessible
+- Firewall isn't blocking the connection
 
-1. Use the `get_instructions` tool within your MCP client
-2. Check the API health with `check_api_health`
-3. Verify your configuration matches the examples above
+</details>
 
-## Technical Architecture
+<details>
+<summary><b>🔓 Decryption failures</b></summary>
 
-### How It Works
+Common causes:
+- Secret has already been viewed (burn-after-reading)
+- Secret has expired (check expiration time)
+- Wrong decryption key or password
+- Key was truncated when copying
 
-1. **Client-Side Encryption**
-   - Generate 256-bit AES key and 96-bit IV using cryptographically secure random numbers
-   - Encrypt message using AES-256-GCM (provides both confidentiality and authenticity)
-   - Base64-encode encrypted data, IV, and authentication tag for safe transmission
+</details>
 
-2. **Server Storage**
-   - Send encrypted data + IV to SecureNote.link API (key is never transmitted)
-   - Server stores encrypted data with expiration metadata
-   - Returns unique secret ID for retrieval
+<details>
+<summary><b>⚙️ MCP configuration problems</b></summary>
 
-3. **Secure Sharing**
-   - **Convenient mode**: Embed decryption key in URL fragment (`#key`)
-   - **Maximum security mode**: Provide API URL and key separately
+- Restart your MCP client after config changes
+- Verify JSON syntax is valid
+- Use absolute paths (not relative)
+- Check file permissions on the script
 
-4. **Retrieval & Decryption**
-   - Fetch encrypted data from server using secret ID
-   - Decrypt locally using provided key and IV
-   - Automatically delete secret after viewing (burn-after-reading)
+</details>
 
-### Security Model
+---
 
-The security relies on:
-- **Strong encryption**: AES-256-GCM with authenticated encryption
-- **Key separation**: Decryption keys never stored on server
-- **Secure randomness**: Cryptographically secure key/IV generation
-- **Zero-knowledge**: Server cannot decrypt data without the key
-- **Automatic cleanup**: Secrets expire and are deleted after viewing
+## 🤝 Contributing & Support
 
-### API Endpoints
+Found a bug? Have a feature request? We'd love to hear from you!
 
-The MCP server communicates with these SecureNote.link API endpoints:
+- **Issues:** [Report on GitHub](https://github.com/your-repo/issues)
+- **Discussions:** Share ideas and get help
+- **Documentation:** [Full docs available](https://docs.securenote.link)
 
-- `POST /api/v1/secrets` - Store encrypted secret
-- `GET /api/v1/secrets/{id}` - Retrieve encrypted secret
-- `POST /api/v1/secrets/{id}/verify` - Verify password for protected secrets
-- `GET /api/v1/health` - Check API health status
+---
 
-## License
+## 📄 License
 
-MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - Use it however you want!
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for secure AI agent workflows**
+### Made with ❤️ for secure AI workflows
 
-[Website](https://securenote.link) • [Issues](https://github.com/your-repo/issues) • [Documentation](https://docs.securenote.link)
+**Your secrets are safe with us (because we never see them!)**
+
+[🌐 Try SecureNote.link](https://securenote.link) • [🐳 Get on MCP Hub](https://hub.docker.com/mcp/server/securenote-link-mcp-server/overview)
+
+⭐ **Star us on GitHub if this helps you!**
 
 </div>
