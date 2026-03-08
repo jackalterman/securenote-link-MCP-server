@@ -1,5 +1,5 @@
 # Stage 1: builder for Python dependencies
-FROM python:3.13.8-alpine AS builder
+FROM python:3.13.12-alpine AS builder
 
 ENV \
     PIP_NO_CACHE_DIR=1 \
@@ -33,7 +33,7 @@ RUN python3 -m pip install --upgrade pip setuptools wheel && \
     python3 -m pip install --user -r requirements.txt
 
 # Final runtime stage
-FROM python:3.13.8-alpine AS runtime
+FROM python:3.13.12-alpine AS runtime
 
 ENV \
     PATH="/home/appuser/.local/bin:$PATH" \
